@@ -85,7 +85,6 @@ class MMP():
             return 0
         else 
             return 1
-        
 
     def zero_test(self,val,deg):
 
@@ -98,10 +97,10 @@ if __name__=="__main__":
         k = 5
         m = 10
         mmap = MMP(k)
-        print "generate encodings"
+        print "generate level 1 encodings"
         encodings = [mmap.sample(1) for i in range(k)]
 
-        print "multiply encodings"
+        print "multiply encodings to get level k"
         result = 1
         for c in encodings:
             result *= c
