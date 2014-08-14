@@ -6,13 +6,13 @@ print "CLT multilinear map implementation using SAGE"
 current_time = lambda:time.time()
 
 class Ciphertext():
-    def __init__(self,val,degree)
+    def __init__(self,val,degree):
         self.val = val
         self.degree = degree
     
 
 class MMP():
-    def __init__(self, lam, k):
+    def __init__(self, k):
 
         self.x0 = ZZ(1)
         self.p = [0 for i in range(N)]
@@ -20,7 +20,7 @@ class MMP():
         print "generate p_i's and x0: "
        
         for i in range(N):
-            self.p[i] = next_prime(ZZ.random_element(2**eta))
+            self.p[i] = next_prime(ZZ.random_element(2**etp))
             
         self.x0 = prod(self.p[i] for i in range(N))
 
@@ -33,18 +33,18 @@ class MMP():
             self.crtCoeff[i] = self.crtCoeff[i]*Q
 
         print "generate the g_i's: "
-        self.g = [0 for i i range(N)]
+        self.g = [0 for i in range(N)]
         for i in range(N):
             self.g[i] = next_prime(ZZ.random_element(2**alpha))
 
         print "generate z and zinv: "
         while True:
             self.z = ZZ.random_element(self.x0)  
-            try
+            try:
                 self.zinv = inverse_mod(z,self.x0)
                 break
-            except ZeroDivisionError
-            
+            except ZeroDivisionError:
+                error = 1
 
         print "generate y: "
         self.y = self.encrypt(1,rho,1)
@@ -62,16 +62,16 @@ class MMP():
         self.p_zt = mod(sefl.p_zt,x0)
         return 0
 
-    def encrypt(self,m,nSize,level)
+    def encrypt(self,m,nSize,level):
         res = 0
-        for i in range(N)
+        for i in range(N):
             res = res + (m + self.g[i]*ZZ.random_element(2**nSize))*self.crtCoeff[i]
         res = mod(res,x0)
-        for j in range(level)
+        for j in range(level):
             res = mod(res*zinv,x0)
         return res
 
-    def sample(self,k)
+    def sample(self,k):
         #m = [0 for i in range(N)]
         #for i in range(N):
         #    m[i] = ZZ.random_element(2**alpha)
@@ -79,26 +79,31 @@ class MMP():
         c = self.encrypt(m,rho,k)
         return mod(c,self.x0)
     
-    def is_zero(self,c)
-        w = self.zero_test(c.val,c.degree)
+    def is_zero(self,c):
+        w = mod(c*p_zt,x0)
+        if self.numBits(w) < self.numBits(x0) - bound:
+            return 0
+        else 
+            return 1
         
 
-    def zero_test(self,val,deg)
+    def zero_test(self,val,deg):
 
-        for i in range(
+       # for i in range(
+       return 0
         
 
 if __name__=="__main__":
 
         k = 5
         m = 10
-        mmap = MMP()
+        mmap = MMP(k)
         print "generate encodings"
-        encodings = [mmap.sample(k) for i in range(m)]
+        encodings = [mmap.sample(1) for i in range(k)]
 
         print "multiply encodings"
         result = 1
-        for c in encodings
+        for c in encodings:
             result *= c
 
         print "zero test"
