@@ -7,7 +7,7 @@ alpha = 80
 
 N = 5
 eta = 1838
-etp = 460
+etp = 160
 
 rho = 41
 

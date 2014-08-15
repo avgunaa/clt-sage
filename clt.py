@@ -1,14 +1,15 @@
 from sage.all import *
 from clt_params import *
 
+import time
 print "CLT multilinear map implementation using SAGE" 
 
 current_time = lambda:time.time()
 
-class Ciphertext():
-    def __init__(self,val,degree):
-        self.val = val
-        self.degree = degree
+#class Ciphertext():
+#    def __init__(self,val,degree):
+#        self.val = val
+#        self.degree = degree
     
 
 class MMP():
@@ -29,7 +30,8 @@ class MMP():
         self.crtCoeff = [0 for i in range(N)]
         for i in range(N):
             Q = self.x0/self.p[i]
-            self.crtCoeff[i] = inverse_mod(Q,self.p[i])
+
+            self.crtCoeff[i] = ZZ(Zmod(self.p[i])(Q)**(-1))#inverse_mod(mod(Q,self.p[i]),self.p[i])
             self.crtCoeff[i] = self.crtCoeff[i]*Q
 
         print "generate the g_i's: "
@@ -41,7 +43,7 @@ class MMP():
         while True:
             self.z = ZZ.random_element(self.x0)  
             try:
-                self.zinv = inverse_mod(z,self.x0)
+                self.zinv = ZZ(Zmod(self.x0)(self.z)**(-1))
                 break
             except ZeroDivisionError:
                 error = 1
@@ -54,21 +56,20 @@ class MMP():
         zkappa = 1
         self.p_zt = 0
         for i in range(kappa):
-            zkappa = mod(zkappa*self.z,self.x0)
+            zkappa = Zmod(self.x0)(zkappa*self.z)
         for i in range(N):
-            t_res = inverse_mod(g[i],p[i])
-            t_res = mod(t_res*z_kappa,p[i])*ZZ.random_element(2**hbits)*(x0/p[i])
+            t_res = ZZ(Zmod(self.p[i])(self.g[i])**(-1))
+            t_res = ZZ(Zmod(self.p[i])(t_res*zkappa))*ZZ.random_element(2**hBits)*(self.x0/self.p[i])
             self.p_zt = self.p_zt + t_res
-        self.p_zt = mod(sefl.p_zt,x0)
-        return 0
+        self.p_zt = Zmod(self.x0)(self.p_zt)
 
     def encrypt(self,m,nSize,level):
         res = 0
         for i in range(N):
             res = res + (m + self.g[i]*ZZ.random_element(2**nSize))*self.crtCoeff[i]
-        res = mod(res,x0)
+        res = Zmod(self.x0)(res)
         for j in range(level):
-            res = mod(res*zinv,x0)
+            res = Zmod(self.x0)(res*self.zinv)
         return res
 
     def sample(self,k):
@@ -77,20 +78,22 @@ class MMP():
         #    m[i] = ZZ.random_element(2**alpha)
         m = ZZ.random_element(2**alpha)
         c = self.encrypt(m,rho,k)
-        return mod(c,self.x0)
+        return Zmod(self.x0)(c)
     
     def is_zero(self,c):
-        w = mod(c*p_zt,x0)
-        if self.numBits(w) < self.numBits(x0) - bound:
+        w = Zmod(self.x0)(c*self.p_zt)
+        if self.numBits(w) < self.numBits(self.x0) - bound:
             return 0
-        else 
+        else:
             return 1
 
     def zero_test(self,val,deg):
 
        # for i in range(
        return 0
-        
+       
+    def numBits(self,x):
+        return len(ZZ(x).digits(2)) 
 
 if __name__=="__main__":
 
